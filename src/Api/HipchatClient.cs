@@ -102,6 +102,32 @@ namespace HipchatApiV2
             }
         }
         #endregion
+
+        public HipchatGetRoomHistoryResponse GetRoomHistory(string roomName)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                if (roomName.IsEmpty() || roomName.Length > 100)
+                    throw new ArgumentOutOfRangeException(roomName, "Valid Lengths of roomName is 1 to 100 characters.");
+                try
+                {
+                    return HipchatEndpoints.GetRoomHistoryEndpointFormat.Fmt(roomName)
+                        .AddQueryParam("", "")
+                        .AddHipchatAuthentication(_authToken)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetRoomHistoryResponse>();
+                }
+                catch (WebException exception)
+                {
+                    throw ExceptionHelpers.WebExceptionHelper(exception, "view_group");
+                }
+                catch (Exception exception)
+                {
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetRoom");
+                }
+            } 
+        }
+        
         /// <summary>
         /// Gets an OAuth token for requested grant type. 
         /// </summary>
